@@ -102,11 +102,13 @@ function AppMap() {
   return (
     <div className='undp-container'>
       <div className='padding-05 margin-05' ref={containerRef}>
-        <h5 className='undp-typography bold'>
+        <h2 className='undp-typography bold'>
           UNDP’s work on sustainable finance
-        </h5>
-
-        <div id='statCards' className='flex-div margin-bottom-05'>
+        </h2>
+        <h6 className='undp-typography small-font margin-top-07 margin-bottom-04'>
+          Number of countries with
+        </h6>
+        <div id='statCards' className='flex-div margin-bottom-08'>
           <StatCardFromData
             data={transformDataForGraph(data, 'statCard', [
               {
@@ -115,7 +117,7 @@ function AppMap() {
               },
             ])}
             backgroundColor
-            graphTitle='All countries'
+            graphTitle='All sustainable finance services'
             aggregationMethod='sum'
           />
           <StatCardFromData
@@ -126,7 +128,7 @@ function AppMap() {
               },
             ])}
             backgroundColor
-            graphTitle='Countries with public finance services'
+            graphTitle='Public finance services'
             aggregationMethod='sum'
           />
           <StatCardFromData
@@ -137,7 +139,7 @@ function AppMap() {
               },
             ])}
             backgroundColor
-            graphTitle='Countries with private finance services'
+            graphTitle='Private finance services'
             aggregationMethod='sum'
           />
           <StatCardFromData
@@ -148,7 +150,7 @@ function AppMap() {
               },
             ])}
             backgroundColor
-            graphTitle='Countries with INFFs'
+            graphTitle='INFFs'
             aggregationMethod='sum'
           />
           <StatCardFromData
@@ -159,11 +161,10 @@ function AppMap() {
               },
             ])}
             backgroundColor
-            graphTitle='Countries with finance academy'
+            graphTitle='Finance academy'
             aggregationMethod='sum'
           />
         </div>
-
         <div id='vizArea' className='flex-div'>
           <div
             className='flex-div flex-column'
@@ -202,14 +203,15 @@ function AppMap() {
             </div>
           </div>
 
-          <div style={{ width: 'calc(80% - 1rem' }}>
+          <div id='map' style={{ width: 'calc(80% - 1rem' }}>
             <ChoroplethMap
               data={transformDataForGraph(data, 'choroplethMap', [
                 { chartConfigId: 'countryCode', columnId: 'iso' },
                 { chartConfigId: 'x', columnId: 'all' },
               ])}
-              height={1000}
-              centerPoint={[0, 0]}
+              height={650}
+              scale={280}
+              centerPoint={[0, 25]}
               showAntarctica={false}
               zoomScaleExtend={[1, 1]}
               domain={[0, 0.5, 0.7]}
@@ -218,6 +220,7 @@ function AppMap() {
             />
           </div>
         </div>
+        <div>Cards</div>
       </div>
     </div>
   );
