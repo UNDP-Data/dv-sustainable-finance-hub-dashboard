@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import AppMap from './AppMap';
+import App from './App';
 
 const getEl = (embedSelector: string) => {
   if (typeof embedSelector === 'string') {
@@ -15,12 +15,12 @@ const getEl = (embedSelector: string) => {
   return embedSelector;
 };
 
-const vizApp = getEl('[data-viz-app-map]');
+const vizApp = getEl('[data-viz-app]');
 if (vizApp) {
   const rootEmbed = ReactDOM.createRoot(vizApp);
   rootEmbed.render(
     <React.StrictMode>
-      <AppMap />
+      <App />
     </React.StrictMode>,
   );
 }

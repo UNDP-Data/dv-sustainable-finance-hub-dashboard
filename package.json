@@ -9,11 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@undp-data/undp-visualization-library": "^0.1.61",
+    "@undp-data/undp-visualization-library": "^1.0.26",
     "antd": "^5.18.3",
     "lucide-react": "^0.309.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "styled-components": "^6.1.13",
     "undp-viz-colors": "^1.0.7"
   },
   "devDependencies": {
