@@ -1,0 +1,62 @@
+.chip {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin: 2px;
+  font-size: 14px;
+  text-align: center;
+  font-family: 'ProximaNova', 'proxima-nova', 'Helvetica Neue', 'Roboto', sans-serif !important;
+  color: white;
+}
+
+.chip-sub {
+  color: black;
+  background-color: white;
+}
+
+.public-chip {
+  background-color: var(--blue-600);
+}
+
+.public-chip-sub {
+  border: 1px solid var(--blue-600);
+}
+
+.private-chip {
+  background-color: #02A38A;
+}
+
+.private-chip-sub {
+  border: 1px solid #02A38A;
+}
+
+.inffs-chip {
+  background-color: #E78625;
+}
+
+.academy-chip {
+  background-color: #757AF0;
+}
+
+.biofin-chip {
+  background-color: #E0529E;
+}
+
+.customCard h6 {
+    margin: 0;
+}
+.customCard {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 16px;
+}
+.customCard p {
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.chips{
+  margin-bottom: 8px;
+}
