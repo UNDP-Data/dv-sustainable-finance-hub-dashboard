@@ -42,7 +42,11 @@ const StyledSegmented = styled(Segmented)`
 function App() {
   const [data, setData] = useState<any[] | null>(null);
   const [taxonomy, setTaxonomy] = useState<any[] | null>(null);
-  const [selectedColumn, setSelectedColumn] = useState('all');
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
+    null,
+  );
+  const [selectedWorkArea, setSelectedWorkArea] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all_countries');
   const [viewMode, setViewMode] = useState<'Map' | 'Cards'>('Map');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -89,14 +93,39 @@ function App() {
       .map((country: any) => country['Alpha-3 code']);
 
     return data.filter(row => {
-      return (
+      const matchesCategory =
         selectedCategory === 'all_countries' ||
         (selectedCategory === 'sids' && sidsCodes.includes(row.iso)) ||
         (selectedCategory === 'ldcs' && ldcCodes.includes(row.iso)) ||
-        (selectedCategory === 'fragile' && row.fragile === 1)
+        (selectedCategory === 'fragile' && row.fragile === 1);
+
+      const matchesService =
+        !selectedService ||
+        (selectedService === 'public' && row.public) ||
+        (selectedService === 'private' && row.private) ||
+        (selectedService === 'inffs' && row.inffs) ||
+        (selectedService === 'academy' && row.academy);
+
+      const matchesSubcategory =
+        !selectedSubcategory || row[selectedSubcategory];
+
+      const matchesWorkArea = !selectedWorkArea || row[selectedWorkArea];
+
+      return (
+        matchesCategory &&
+        matchesService &&
+        matchesSubcategory &&
+        matchesWorkArea
       );
     });
-  }, [data, taxonomy, selectedCategory]);
+  }, [
+    data,
+    taxonomy,
+    selectedCategory,
+    selectedService,
+    selectedSubcategory,
+    selectedWorkArea,
+  ]);
 
   // Use filteredData to derive highlightedCountries
   const highlightedCountries = useMemo(() => {
@@ -110,8 +139,6 @@ function App() {
       </div>
     );
   }
-  console.log(data);
-
   return (
     <div className='undp-container' style={{ maxWidth: '1980px' }}>
       <div className='padding-05 margin-05' ref={containerRef}>
@@ -150,20 +177,84 @@ function App() {
           >
             <div>
               <p className='undp-typography small-font margin-00'>
-                Select primary service or work area
+                Select service
               </p>
               <Select
-                value={selectedColumn}
-                className='undp-select not-to-be-embedded margin-top-03'
-                onChange={value => setSelectedColumn(value)}
+                value={selectedService}
+                className='undp-select margin-top-03 margin-bottom-00'
+                onChange={value => {
+                  setSelectedService(value);
+                  setSelectedSubcategory(null); // Reset subcategory when service changes
+                }}
               >
-                <Option value='all'>All Services and Work Areas</Option>
-                <Option value='private_impact'>Private Impact</Option>
-                <Option value='public'>Public</Option>
+                <Option value={null}>All Services</Option>
+                <Option value='public'>Public Finance</Option>
+                <Option value='private'>Private Finance</Option>
                 <Option value='inffs'>INFFs</Option>
                 <Option value='academy'>Academy</Option>
               </Select>
+
+              {selectedService === 'public' && (
+                <div>
+                  <p
+                    className='undp-typography small-font margin-top-05'
+                    style={{ marginBottom: '0' }}
+                  >
+                    Select public subcategory
+                  </p>
+                  <Select
+                    value={selectedSubcategory}
+                    className='undp-select margin-top-03'
+                    onChange={value => setSelectedSubcategory(value)}
+                  >
+                    <Option value={null}>All Subcategories</Option>
+                    <Option value='public_tax'>Tax for the SDGs</Option>
+                    <Option value='public_debt'>Debt for the SDGs</Option>
+                    <Option value='public_budget'>Budget for the SDGs</Option>
+                    <Option value='public_insurance'>
+                      Insurance and risk finance
+                    </Option>
+                  </Select>
+                </div>
+              )}
+
+              {selectedService === 'private' && (
+                <div>
+                  <p className='undp-typography small-font margin-00'>
+                    Select private subcategory
+                  </p>
+                  <Select
+                    value={selectedSubcategory}
+                    className='undp-select margin-top-03'
+                    onChange={value => setSelectedSubcategory(value)}
+                  >
+                    <Option value={null}>All Subcategories</Option>
+                    <Option value='private_pipelines'>
+                      Originating pipelines
+                    </Option>
+                    <Option value='private_impact'>Managing for impact</Option>
+                    <Option value='private_environment'>
+                      Enabling environment
+                    </Option>
+                  </Select>
+                </div>
+              )}
+
+              <p className='undp-typography small-font margin-00 margin-top-05'>
+                Select work area
+              </p>
+              <Select
+                value={selectedWorkArea}
+                className='undp-select margin-top-03'
+                onChange={value => setSelectedWorkArea(value)}
+              >
+                <Option value={null}>All Work Areas</Option>
+                <Option value='biofin'>Biodiversity finance</Option>
+                <Option value='gender_equality'>Gender equality</Option>
+                <Option value='climate_finance'>Climate finance</Option>
+              </Select>
             </div>
+
             <div>
               <p className='undp-typography small-font margin-00 padding-bottom-02'>
                 Select country group
@@ -182,83 +273,83 @@ function App() {
           </div>
 
           {/* Right Content Area */}
-          <div style={{ width: '80%', position: 'relative' }}>
-            {/* Segmented Button Aligned to Top Right */}
+          <div
+            style={{
+              width: '80%',
+              position: 'relative',
+              display: 'flex',
+              justifyContent: 'center',
+              backgroundColor: 'var(--gray-200)',
+              minHeight: '916px',
+            }}
+          >
             <div
-              className='undp-container'
-              style={{ position: 'relative', maxHeight: '2160px' }}
+              style={{ position: 'absolute', right: '0.5rem', top: '0.5rem' }}
             >
-              <div
-                style={{ position: 'absolute', right: '0.5rem', top: '0.5rem' }}
-              >
-                <StyledSegmented
-                  options={[
-                    {
-                      label: (
-                        <div className='flex-div flex-vert-align-center gap-02'>
-                          <Globe strokeWidth={1.7} size={16} /> Map
-                        </div>
-                      ),
-                      value: 'Map',
-                    },
-                    {
-                      label: (
-                        <div className='flex-div flex-vert-align-center gap-02'>
-                          <LayoutGrid strokeWidth={1.7} size={16} /> Cards
-                        </div>
-                      ),
-                      value: 'Cards',
-                    },
-                  ]}
-                  value={viewMode}
-                  onChange={(value: any) => setViewMode(value)}
-                  style={{
-                    margin: '0.5rem 0.5rem 0.5rem auto',
-                    width: 'fit-content',
-                  }}
-                />
-              </div>
-
-              {/* Map View */}
-              <ViewContainer isVisible={viewMode === 'Map'}>
-                <ChoroplethMap
-                  data={transformDataForGraph(data, 'choroplethMap', [
-                    { chartConfigId: 'countryCode', columnId: 'iso' },
-                    { chartConfigId: 'x', columnId: 'all' },
-                  ])}
-                  height={650}
-                  backgroundColor='var(--gray-100)'
-                  scale={260}
-                  padding='1.25rem'
-                  centerPoint={[0, 25]}
-                  showAntarctica={false}
-                  zoomScaleExtend={[1, 1]}
-                  domain={[0, 0.5, 0.7]}
-                  showColorScale={false}
-                  highlightedCountryCodes={highlightedCountries}
-                />
-              </ViewContainer>
-
-              {/* Cards View */}
-              <ViewContainer isVisible={viewMode === 'Cards'}>
-                <DataCards
-                  data={filteredData}
-                  padding='3rem 1.25rem'
-                  sources={[
-                    {
-                      source: 'Organization ABC',
-                      link: 'https://data.undp.org',
-                    },
-                  ]}
-                  footNote='Footnote of the graph'
-                  cardSearchColumns={['country']}
-                  cardTemplate="<div class='customCard'><div class='customCardTop'><p class='undp-viz-typography' style='font-size: 20px;'>{{country}}</p>{{#if services}}<div><p class='undp-viz-typography'>Services:</p><div class='chips'>{{#if public}}<div class='chip public-chip'>Public finance</div>{{/if}}{{#if private}}<div class='chip private-chip'>Private finance</div>{{/if}}{{#if inffs}}<div class='chip inffs-chip'>INFFs</div></br>{{/if}}{{#if academy}}<div class='chip academy-chip'>SDG Finance Academy</div>{{/if}}</div></div>{{/if}}{{#if work_areas}}<div><p class='undp-viz-typography'>Work areas:</p><div class='chips'>{{#if biofin}}<div class='chip biofin-chip'>Biodiversity finance</div>{{/if}}</div></div>{{/if}}</div><div class='cta-button'>Read more</div></div>"
-                  backgroundColor='var(--gray-100)'
-                  cardBackgroundColor='#fff'
-                  cardDetailView="<div style='padding:24px;'><h5 class='undp-viz-typography'>{{country}}</h5>{{#if services}}<h6 class='undp-viz-typography'>Services ({{services}})</h6><div class='chips'>{{#if public}}<div class='chip public-chip'>Public Finance for the SDGs</div>{{#if public_tax}}<div class='chip chip-sub public-chip-sub'>Tax for the SDGs</div>{{/if}}{{#if public_debt}}<div class='chip chip-sub public-chip-sub'>Debt for the SDGs</div>{{/if}}{{#if public_budget}}<div class='chip chip-sub public-chip-sub'>Budget for the SDGs</div>{{/if}}{{#if public_insurance}}<div class='chip chip-sub public-chip-sub'>Insurance and risk finance</div>{{/if}}</br>{{/if}}{{#if private}}<div class='chip private-chip'>Private Finance for the SDGs</div>{{#if private_pipelines}}<div class='chip chip-sub private-chip-sub'>Originating pipelines</div>{{/if}}{{#if private_impact}}<div class='chip chip-sub private-chip-sub'>Managing for impact</div>{{/if}}{{#if private_environment}}<div class='chip chip-sub private-chip-sub'>Enabling environment</div>{{/if}}</br>{{/if}}{{#if inffs}}<div class='chip inffs-chip'>INFFs</div></br>{{/if}}{{#if academy}}<div class='chip academy-chip'>SDG Finance Academy</div>{{/if}}</div>{{/if}}{{#if work_areas}}<h6 class='undp-viz-typography'>Work areas ({{work_areas}})</h6><div class='chips'>{{#if gender_equality}}<div class='chip gender-equality-chip'>Gender equality</div>{{/if}}{{#if biofin}}<div class='chip biofin-chip'>Biodiversity finance</div>{{/if}}{{#if climate_finance}}<div class='chip climate-finance-chip'>Climate finance</div>{{/if}}</div>{{/if}}</div>"
-                />
-              </ViewContainer>
+              <StyledSegmented
+                options={[
+                  {
+                    label: (
+                      <div className='flex-div flex-vert-align-center gap-02'>
+                        <Globe strokeWidth={1.7} size={16} /> Map
+                      </div>
+                    ),
+                    value: 'Map',
+                  },
+                  {
+                    label: (
+                      <div className='flex-div flex-vert-align-center gap-02'>
+                        <LayoutGrid strokeWidth={1.7} size={16} /> Cards
+                      </div>
+                    ),
+                    value: 'Cards',
+                  },
+                ]}
+                value={viewMode}
+                onChange={(value: any) => setViewMode(value)}
+                style={{
+                  margin: '0.5rem 0.5rem 0.5rem auto',
+                  width: 'fit-content',
+                }}
+              />
             </div>
+
+            {/* Map View */}
+            <ViewContainer isVisible={viewMode === 'Map'}>
+              <ChoroplethMap
+                data={transformDataForGraph(data, 'choroplethMap', [
+                  { chartConfigId: 'countryCode', columnId: 'iso' },
+                  { chartConfigId: 'x', columnId: 'all' },
+                ])}
+                height={650}
+                backgroundColor='var(--gray-200)'
+                mapNoDataColor='#D4D6D8'
+                mapBorderColor='#A9B1B7'
+                scale={280}
+                tooltip='test'
+                padding='1.25rem'
+                centerPoint={[10, 25]}
+                showAntarctica={false}
+                zoomScaleExtend={[1, 1]}
+                domain={[0, 0.5, 0.7]}
+                showColorScale={false}
+                highlightedCountryCodes={highlightedCountries}
+              />
+            </ViewContainer>
+
+            {/* Cards View */}
+            <ViewContainer isVisible={viewMode === 'Cards'}>
+              <DataCards
+                data={filteredData}
+                padding='3rem 1.25rem 0 1.25rem'
+                height={800}
+                cardSearchColumns={['country']}
+                cardTemplate="<div class='customCard'><div class='customCardTop'><p class='undp-viz-typography' style='font-size: 20px;'>{{country}}</p>{{#if services}}<div><p class='undp-viz-typography'>Services:</p><div class='chips'>{{#if public}}<div class='chip public-chip'>Public finance</div>{{/if}}{{#if private}}<div class='chip private-chip'>Private finance</div>{{/if}}{{#if inffs}}<div class='chip inffs-chip'>INFFs</div></br>{{/if}}{{#if academy}}<div class='chip academy-chip'>SDG Finance Academy</div>{{/if}}</div></div>{{/if}}{{#if work_areas}}<div><p class='undp-viz-typography'>Work areas:</p><div class='chips'>{{#if biofin}}<div class='chip biofin-chip'>Biodiversity finance</div>{{/if}}</div></div>{{/if}}</div><div class='cta-button'>Read more</div></div>"
+                backgroundColor='var(--gray-100)'
+                cardBackgroundColor='#fff'
+                cardDetailView="<div style='padding:24px;'><h5 class='undp-viz-typography'>{{country}}</h5>{{#if services}}<h6 class='undp-viz-typography'>Services ({{services}})</h6><div class='chips'>{{#if public}}<div class='chip public-chip'>Public Finance for the SDGs</div>{{#if public_tax}}<div class='chip chip-sub public-chip-sub'>Tax for the SDGs</div>{{/if}}{{#if public_debt}}<div class='chip chip-sub public-chip-sub'>Debt for the SDGs</div>{{/if}}{{#if public_budget}}<div class='chip chip-sub public-chip-sub'>Budget for the SDGs</div>{{/if}}{{#if public_insurance}}<div class='chip chip-sub public-chip-sub'>Insurance and risk finance</div>{{/if}}</br>{{/if}}{{#if private}}<div class='chip private-chip'>Private Finance for the SDGs</div>{{#if private_pipelines}}<div class='chip chip-sub private-chip-sub'>Originating pipelines</div>{{/if}}{{#if private_impact}}<div class='chip chip-sub private-chip-sub'>Managing for impact</div>{{/if}}{{#if private_environment}}<div class='chip chip-sub private-chip-sub'>Enabling environment</div>{{/if}}</br>{{/if}}{{#if inffs}}<div class='chip inffs-chip'>INFFs</div></br>{{/if}}{{#if academy}}<div class='chip academy-chip'>SDG Finance Academy</div>{{/if}}</div>{{/if}}{{#if work_areas}}<h6 class='undp-viz-typography'>Work areas ({{work_areas}})</h6><div class='chips'>{{#if gender_equality}}<div class='chip gender-equality-chip'>Gender equality</div>{{/if}}{{#if biofin}}<div class='chip biofin-chip'>Biodiversity finance</div>{{/if}}{{#if climate_finance}}<div class='chip climate-finance-chip'>Climate finance</div>{{/if}}</div>{{/if}}</div>"
+              />
+            </ViewContainer>
           </div>
         </div>
       </div>
