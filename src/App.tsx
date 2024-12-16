@@ -51,7 +51,10 @@ function App() {
     const loadData = async () => {
       try {
         const d = (await fetchAndParseCSV('/data.csv')) as any[];
-        setData(d);
+
+        // Prefilter data based on the 'all' column
+        const prefilteredData = d.filter(row => row.all >= 1);
+        setData(prefilteredData);
       } catch (error) {
         console.error('Error loading data:', error);
       }
@@ -107,8 +110,7 @@ function App() {
       </div>
     );
   }
-
-  console.log(filteredData);
+  console.log(data);
 
   return (
     <div className='undp-container' style={{ maxWidth: '1980px' }}>
@@ -250,10 +252,10 @@ function App() {
                   ]}
                   footNote='Footnote of the graph'
                   cardSearchColumns={['country']}
-                  cardTemplate="<div class='customCard'><h6 class='undp-viz-typography'>{{country}}</h6><div><p class='undp-viz-typography'>Total number of services and work areas:</p><p class='undp-viz-typography'><b>{{all}}</b></p></div>{{#if services}}<div><p class='undp-viz-typography'>Services and subcategories:</p><div class='chips'>{{#if public}}<div class='chip public-chip'>Public finance</div>{{#if public_tax}}<div class='chip chip-sub public-chip-sub'>Tax for the SDGs</div></br>{{/if}}{{#if public_debt}}<div class='chip chip-sub public-chip-sub'>Debt for the SDGs</div>{{/if}}{{#if public_budget}}<div class='chip chip-sub public-chip-sub'>Budget for the SDGs</div></br>{{/if}}{{#if public_insurance}}<div class='chip chip-sub public-chip-sub'>Insurance and risk finance</div></br>{{/if}}{{/if}}{{#if private}}<div class='chip private-chip'>Private finance</div>{{#if private_pipelines}}<div class='chip chip-sub private-chip-sub'>Originating pipelines</div></br>{{/if}}{{#if private_impact}}<div class='chip chip-sub private-chip-sub'>Managing for impact</div></br>{{/if}}{{#if private_environment}}<div class='chip chip-sub private-chip-sub'>Enabling environment</div></br>{{/if}}{{/if}}{{#if inffs}}<div class='chip inffs-chip'>INFFs</div></br>{{/if}}{{#if academy}}<div class='chip academy-chip'>SDG Finance Academy</div>{{/if}}</div></div>{{/if}}{{#if work_areas}}<div><p class='undp-viz-typography'>Work areas:</p><div class='chips'>{{#if biofin}}<div class='chip biofin-chip'>Biodiversity finance</div>{{/if}}</div></div>{{/if}}</div>"
+                  cardTemplate="<div class='customCard'><div class='customCardTop'><p class='undp-viz-typography' style='font-size: 20px;'>{{country}}</p>{{#if services}}<div><p class='undp-viz-typography'>Services:</p><div class='chips'>{{#if public}}<div class='chip public-chip'>Public finance</div>{{/if}}{{#if private}}<div class='chip private-chip'>Private finance</div>{{/if}}{{#if inffs}}<div class='chip inffs-chip'>INFFs</div></br>{{/if}}{{#if academy}}<div class='chip academy-chip'>SDG Finance Academy</div>{{/if}}</div></div>{{/if}}{{#if work_areas}}<div><p class='undp-viz-typography'>Work areas:</p><div class='chips'>{{#if biofin}}<div class='chip biofin-chip'>Biodiversity finance</div>{{/if}}</div></div>{{/if}}</div><div class='cta-button'>Read more</div></div>"
                   backgroundColor='var(--gray-100)'
                   cardBackgroundColor='#fff'
-                  cardDetailView="<div style='padding: 24px;'>test</div>"
+                  cardDetailView="<div style='padding:24px;'><h5 class='undp-viz-typography'>{{country}}</h5>{{#if services}}<h6 class='undp-viz-typography'>Services ({{services}})</h6><div class='chips'>{{#if public}}<div class='chip public-chip'>Public Finance for the SDGs</div>{{#if public_tax}}<div class='chip chip-sub public-chip-sub'>Tax for the SDGs</div>{{/if}}{{#if public_debt}}<div class='chip chip-sub public-chip-sub'>Debt for the SDGs</div>{{/if}}{{#if public_budget}}<div class='chip chip-sub public-chip-sub'>Budget for the SDGs</div>{{/if}}{{#if public_insurance}}<div class='chip chip-sub public-chip-sub'>Insurance and risk finance</div>{{/if}}</br>{{/if}}{{#if private}}<div class='chip private-chip'>Private Finance for the SDGs</div>{{#if private_pipelines}}<div class='chip chip-sub private-chip-sub'>Originating pipelines</div>{{/if}}{{#if private_impact}}<div class='chip chip-sub private-chip-sub'>Managing for impact</div>{{/if}}{{#if private_environment}}<div class='chip chip-sub private-chip-sub'>Enabling environment</div>{{/if}}</br>{{/if}}{{#if inffs}}<div class='chip inffs-chip'>INFFs</div></br>{{/if}}{{#if academy}}<div class='chip academy-chip'>SDG Finance Academy</div>{{/if}}</div>{{/if}}{{#if work_areas}}<h6 class='undp-viz-typography'>Work areas ({{work_areas}})</h6><div class='chips'>{{#if gender_equality}}<div class='chip gender-equality-chip'>Gender equality</div>{{/if}}{{#if biofin}}<div class='chip biofin-chip'>Biodiversity finance</div>{{/if}}{{#if climate_finance}}<div class='chip climate-finance-chip'>Climate finance</div>{{/if}}</div>{{/if}}</div>"
                 />
               </ViewContainer>
             </div>
