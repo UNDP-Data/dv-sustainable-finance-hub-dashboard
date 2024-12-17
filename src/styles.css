@@ -19,7 +19,7 @@
 }
 
 .public-chip-sub {
-  border: 1px solid var(--blue-600);
+  background-color: #0468B134;
 }
 
 .private-chip {
@@ -27,16 +27,18 @@
 }
 
 .private-chip-sub {
-  border: 1px solid #02A38A;
+  background-color: #02a38b34;
 }
 
 .inffs-chip {
   background-color: #E78625;
 }
 
+
 .academy-chip {
   background-color: #757AF0;
 }
+
 
 .biofin-chip {
   background-color: #E0529E;
@@ -104,4 +106,23 @@
 }
 .customCard .chips{
   margin-bottom: 0px;
+}
+
+.modal-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.modal-table th,
+.modal-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.modal-table th {
+  font-weight: bold;
+  font-size: 14px;
+  background-color: var(--gray-300);
+  border-bottom: none;
 }
